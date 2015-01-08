@@ -30,7 +30,7 @@ void setup()
   lcd.clear();                  // start empty
                
   // Initialize Thermometer
-  sensors.setResolution(insideThermometer, 10); // what is resolution
+  sensors.setResolution(outsideThermometer, 10); // what is resolution
   sensors.setResolution(insideThermometer, 10); // what is resolution
   sensors.begin();
   
