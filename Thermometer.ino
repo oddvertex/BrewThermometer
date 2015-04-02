@@ -136,12 +136,14 @@ void printTemperature(DeviceAddress deviceAddress)
 }
 // Connections:
 // LCD Pin = L
-// Arduino Pin = A
-// L(4,5,6)->Ad(12,11,10) L(15)->(41ohm)->Ad(9) L(11,12,13,14)->Ad(5,4,3,2) 
+// Digital Arduino Pin = d
+// Analog Arduino Pin = a
+// Read -> as 'maps to'
+// L(4,5,6)->d(12,11,10) L(15)->(41ohm)->d(9) L(11,12,13,14)->d(5,4,3,2) 
 // L(16)-> gnd
 // L(15)-> (1kohm) -> gnd
 // L(2)-> +5v    L(1)-> gnd
-// thermistor yellow (bus) -> A(7)
+// thermistor yellow (bus) -> d(7)
 // thermister black -> gnd
 // thermister red -> +5v
 // thermister red -> 4.7kohm -> thermister yellow
