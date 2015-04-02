@@ -137,7 +137,7 @@ void printTemperature(DeviceAddress deviceAddress)
 // Connections:
 // LCD Pin = L
 // Arduino Pin = A
-// L(4,5,6)->A(12,11,10) L(15)->(41ohm)->A(9) L(11,12,13,14)->A(5,4,3,2) 
+// L(4,5,6)->Ad(12,11,10) L(15)->(41ohm)->Ad(9) L(11,12,13,14)->Ad(5,4,3,2) 
 // L(16)-> gnd
 // L(15)-> (1kohm) -> gnd
 // L(2)-> +5v    L(1)-> gnd
