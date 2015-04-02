@@ -1,29 +1,42 @@
 #include <TaskManager.h>
-#include <Time.h>
 #include <LiquidCrystal.h>
-// Connections:
-// rs (LCD pin 4) to Arduino pin 12
-// rw (LCD pin 5) to Arduino pin 11
-// enable (LCD pin 6) to Arduino pin 10
-// LCD pin 15 to Arduino pin 13
-// LCD pins d4, d5, d6, d7 to Arduino pins 5, 4, 3, 2
-
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #define ONE_WIRE_BUS 7
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
-DeviceAddress insideThermometer = { 0x28, 0xCA, 0x4D, 0x2B, 0x06, 0x00, 0x00, 0x7E };
-DeviceAddress outsideThermometer = { 0x28, 0x6B, 0x24, 0x2C, 0x06, 0x00, 0x00, 0x71 };
-// get address of thermometer by running 
-
-
+DeviceAddress thermOne = { };
+DeviceAddress thermTwo = { };
+DeviceAddress thermThree = { };
+DeviceAddress thermFour = { };
+int thermCount = 0;
+  
 LiquidCrystal lcd(12, 11, 10, 5, 4, 3, 2);
-
 
 void setup()
 {
-  // Initialize lcd
+  Serial.begin(9600);
+  byte i;
+  byte present = 0;
+  byte data[12];
+  byte addr[8];
+    
+  while(oneWire.search(addr)) {
+    switch (thermCount) {
+    case 0: for( i = 0; i < 8; i++) { thermOne[i] = addr[i];}
+    case 1: for( i = 0; i < 8; i++) { thermTwo[i] = addr[i];}
+    case 2: for( i = 0; i < 8; i++) { thermThree[i] = addr[i];}
+    case 3: for( i = 0; i < 8; i++) { thermFour[i] = addr[i];}
+    }
+    thermCount+=1;
+    if ( OneWire::crc8( addr, 7) != addr[7]) {
+        Serial.print("CRC is not valid!\n");
+        //return;
+    }
+  } 
+  
+  oneWire.reset_search();
+  
   lcd.begin(20,4);              // rows , columns
   int backLight = 9;            // pin 9 will control the backlight
   pinMode(backLight, OUTPUT);   // backlight on pin 9, green jumper
@@ -31,60 +44,82 @@ void setup()
   lcd.clear();                  // start empty
                
   // Initialize Thermometer
-  sensors.setResolution(insideThermometer, 10); // 9 to 12 bits
-  sensors.setResolution(outsideThermometer, 10); // 9 to 12 bits
+  sensors.setResolution(thermOne, 10);   // 9 to 12 bits
+  sensors.setResolution(thermTwo, 10);   // 9 to 12 bits
+  sensors.setResolution(thermThree, 10); // 9 to 12 bits
+  sensors.setResolution(thermFour, 10);  // 9 to 12 bits
+  
   sensors.begin();
   
   lcd.setCursor(0,0);
   lcd.print("    Bradshaw Beer");
 
-  for (int j=1; j<200; j+=1){
+  for (int j=1; j<255; j+=1){
     analogWrite(backLight, j);   // fade backlight in PWM
     delay(10);
   }
-  delay(1);
   digitalWrite(backLight,HIGH);
 
   lcd.setCursor(0,0);               // set cursor to column 0, row 0 (the first row)
   lcd.print("                    ");  // change this text to whatever you like. keep it clean.
-  lcd.setCursor(0,1);               // set cursor to column 0, row 1
-  lcd.print("=--noTemp");
-  lcd.setCursor(11,1); 
-  lcd.print("=--noTemp");
-  //lcd.setCursor(0,2);
-  //lcd.print("Tc=noTemp");
-  //lcd.setCursor(11,2);
-  //lcd.print("Td=noTemp");
-  //lcd.setCursor(0,3);         
-  //lcd.print("H: 60_ 15_ 2_");
   
+  if (thermCount>0) {
+    lcd.setCursor(0,1);               // set cursor to column 0, row 1
+    lcd.print("=--noTemp");
+  }
+  if (thermCount>1) {
+    lcd.setCursor(11,1); 
+    lcd.print("=--noTemp");
+  }
+  if (thermCount>2) {
+    lcd.setCursor(0,2);
+    lcd.print("=--noTemp");
+  }
+  if (thermCount>3) {
+    lcd.setCursor(11,2);
+    lcd.print("=--noTemp");
+  }
  TaskMgr.add(1,looper);
- TaskMgr.add(2,printTime);
+ //TaskMgr.add(2,printTime);
 }
 
 void looper()
 {
-  //delay(200);
   sensors.requestTemperatures();
   
-  lcd.setCursor(3,1);
-  printTemperature(insideThermometer);
-  lcd.setCursor(8,1);
-  lcd.print(" ");
-  lcd.setCursor(14,1);
-  printTemperature(outsideThermometer);
-  lcd.setCursor(19,1);
-  lcd.print(" ");
-  lcd.setCursor(0,3);
-  
+  if (thermCount>0) {
+    lcd.setCursor(3,1);
+    printTemperature(thermOne);
+    lcd.setCursor(8,1);
+    lcd.print(" ");
+  }
+  if (thermCount>1) {
+    lcd.setCursor(14,1);
+    printTemperature(thermTwo);
+    lcd.setCursor(19,1);
+    lcd.print(" ");
+  }
+  if (thermCount>2) {
+    lcd.setCursor(3,2);
+    printTemperature(thermThree);
+    lcd.setCursor(8,2);
+    lcd.print(" ");
+  }
+  if (thermCount>3) {
+    lcd.setCursor(14,2);
+    printTemperature(thermFour);
+    lcd.setCursor(19,2);
+    lcd.print(" ");
+  }
 }
-void printTime() {
+/*void printTime() {
 if ((59-minute())<10) {lcd.print("0");}
   lcd.print(59-minute());
   lcd.print(":");
   if ((59-second())<10) {lcd.print("0");}
   lcd.print(59-second());
 }
+*/
 void printTemperature(DeviceAddress deviceAddress)
 {
   float tempC = sensors.getTempC(deviceAddress);
@@ -99,6 +134,15 @@ void printTemperature(DeviceAddress deviceAddress)
     lcd.print(" ");
   }
 }
-/* ------------------------------------------------------------------------------- */
-
+// Connections:
+// LCD Pin = L
+// Arduino Pin = A
+// L(4,5,6)->A(12,11,10) L(15)->(41ohm)->A(9) L(11,12,13,14)->A(5,4,3,2) 
+// L(16)-> gnd
+// L(15)-> (1kohm) -> gnd
+// L(2)-> +5v    L(1)-> gnd
+// thermistor yellow (bus) -> A(7)
+// thermister black -> gnd
+// thermister red -> +5v
+// thermister red -> 4.7kohm -> thermister yellow
 
