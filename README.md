@@ -1,7 +1,8 @@
 #Brew Thermometer
 
 ##Outside Libraries
-Requires taskmanager library from here:
+Check the 'Helper' folder for 2 required libraries.
+Also requires taskmanager library from here for a total of three libraries:
 http://www.github.com/drsteveplatt/arduino-taskmanager
 
 ##Description
