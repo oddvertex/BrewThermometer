@@ -52,7 +52,7 @@ void setup()
   sensors.begin();
   
   lcd.setCursor(0,0);
-  lcd.print("    Bradshaw Beer");
+  lcd.print(" Matt's Brewery");
 
   for (int j=1; j<255; j+=1){
     analogWrite(backLight, j);   // fade backlight in PWM
@@ -61,22 +61,22 @@ void setup()
   digitalWrite(backLight,HIGH);
 
   lcd.setCursor(0,0);               // set cursor to column 0, row 0 (the first row)
-  lcd.print("                    ");  // change this text to whatever you like. keep it clean.
+  lcd.print("                      ");  // change this text to whatever you like. keep it clean.
   
   if (thermCount>0) {
-    lcd.setCursor(0,1);               // set cursor to column 0, row 1
+    lcd.setCursor(0,0);               // set cursor to column 0, row 1
     lcd.print("=--noTemp");
   }
   if (thermCount>1) {
-    lcd.setCursor(11,1); 
+    lcd.setCursor(0,1); 
     lcd.print("=--noTemp");
   }
   if (thermCount>2) {
-    lcd.setCursor(0,2);
+    lcd.setCursor(8,0);
     lcd.print("=--noTemp");
   }
   if (thermCount>3) {
-    lcd.setCursor(11,2);
+    lcd.setCursor(8,1);
     lcd.print("=--noTemp");
   }
  TaskMgr.add(1,looper);
@@ -88,27 +88,27 @@ void looper()
   sensors.requestTemperatures();
   
   if (thermCount>0) {
-    lcd.setCursor(3,1);
+    lcd.setCursor(3,0);
     printTemperature(thermOne);
-    lcd.setCursor(8,1);
+    lcd.setCursor(8,0);
     lcd.print(" ");
   }
   if (thermCount>1) {
-    lcd.setCursor(14,1);
+    lcd.setCursor(3,1);
     printTemperature(thermTwo);
-    lcd.setCursor(19,1);
+    lcd.setCursor(8,1);
     lcd.print(" ");
   }
   if (thermCount>2) {
-    lcd.setCursor(3,2);
+    lcd.setCursor(3,3);
     printTemperature(thermThree);
-    lcd.setCursor(8,2);
+    lcd.setCursor(8,3);
     lcd.print(" ");
   }
   if (thermCount>3) {
-    lcd.setCursor(14,2);
+    lcd.setCursor(14,3);
     printTemperature(thermFour);
-    lcd.setCursor(19,2);
+    lcd.setCursor(19,3);
     lcd.print(" ");
   }
 }
@@ -136,14 +136,12 @@ void printTemperature(DeviceAddress deviceAddress)
 }
 // Connections:
 // LCD Pin = L
-// Digital Arduino Pin = d
-// Analog Arduino Pin = a
-// Read -> as 'maps to'
-// L(4,5,6)->d(12,11,10) L(15)->(41ohm)->d(9) L(11,12,13,14)->d(5,4,3,2) 
+// Arduino Pin = A
+// L(4,5,6)->A(12,11,10) L(15)->(41ohm)->A(9) L(11,12,13,14)->A(5,4,3,2) 
 // L(16)-> gnd
 // L(15)-> (1kohm) -> gnd
 // L(2)-> +5v    L(1)-> gnd
-// thermistor yellow (bus) -> d(7)
+// thermistor yellow (bus) -> A(7)
 // thermister black -> gnd
 // thermister red -> +5v
 // thermister red -> 4.7kohm -> thermister yellow
